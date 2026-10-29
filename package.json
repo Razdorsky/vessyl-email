@@ -1,0 +1,13 @@
+{
+  "name": "vessyl-email",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "check": "node --test tests/*.test.mjs && node --check app.js && node --check signature.js",
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
