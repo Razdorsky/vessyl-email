@@ -1,4 +1,6 @@
 import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, signatureCtaHtml, ctaHref, validPhone } from './signature.js';
+import { messages } from './locales.js';
+import { setupDisclosureMotion, setupLanguageMenu, setupLanguageTextMotion } from './ui.js';
 
 const form = document.querySelector('#signature-form');
 const preview = document.querySelector('#signature-preview');
@@ -8,12 +10,21 @@ const copyLabel = copyButton.querySelector('span');
 const phone = form.elements.phone;
 const ctaUrl = form.elements.ctaUrl;
 const ctaHint = document.querySelector('#cta-hint');
-const ctaDefaultHint = ctaHint.textContent;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const localAssets = new URL('./assets/', window.location.href).href;
+const normalizeLocale = value => /^es(?:-|$)/i.test(value || '') ? 'es-419' : 'en-US';
+let locale = normalizeLocale(new URL(window.location.href).searchParams.get('lang'));
 let statusTimer;
 let isCopying = false;
 let formRevision = 0;
+let statusKey = 'status.incomplete';
+let copyLabelKey = 'copy.action';
+const settleDisclosures = setupDisclosureMotion(reducedMotion);
+const animateLanguageText = setupLanguageTextMotion(reducedMotion);
+
+function t(key) { return messages[locale][key] ?? messages['en-US'][key] ?? key; }
+function signatureOptions() { return { ctaFallback: t('signature.ctaFallback'), lang: locale, title: t('download.title') }; }
+function setCopyLabel(key) { copyLabelKey = key; copyLabel.textContent = t(key); }
 
 function details() { return cleanDetails(Object.fromEntries(new FormData(form))); }
 function isFormComplete() {
@@ -25,42 +36,78 @@ function syncCopyButton() {
   copyButton.disabled = isCopying || !isFormComplete();
   copyButton.setAttribute('aria-busy', String(isCopying));
 }
-function setStatus(message, state = '') {
+function setStatus(key, state = '') {
   clearTimeout(statusTimer);
-  status.textContent = message;
+  statusKey = key;
+  status.textContent = t(key);
   status.dataset.state = state;
 }
 function render() {
   const current = details();
   // Update text in place so typing never restarts the logo animation.
   if (!preview.firstElementChild) {
-    preview.innerHTML = signatureHtml(current, { assets: localAssets, animated: !reducedMotion.matches });
+    preview.innerHTML = signatureHtml(current, { assets: localAssets, animated: !reducedMotion.matches, ...signatureOptions() });
   }
   const paragraphs = preview.querySelectorAll('p');
-  paragraphs[0].querySelector('font').textContent = `${current.firstName} ${current.lastName}`.trim() || 'Your name';
-  paragraphs[1].querySelector('font').textContent = current.jobTitle || 'Your job title';
+  paragraphs[0].querySelector('font').textContent = `${current.firstName} ${current.lastName}`.trim() || t('preview.name');
+  paragraphs[1].querySelector('font').textContent = current.jobTitle || t('preview.role');
   const phoneLink = paragraphs[3].querySelector('a');
-  phoneLink.querySelector('font').textContent = current.phone || 'Your phone number';
+  phoneLink.querySelector('font').textContent = current.phone || t('preview.phone');
   if (current.phone) {
     phoneLink.href = `tel:${current.phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '')}`;
   } else {
     phoneLink.removeAttribute('href');
   }
   preview.querySelector('[data-signature-cta]')?.remove();
-  preview.querySelector('[data-signature-contact]').insertAdjacentHTML('beforeend', signatureCtaHtml(current));
+  preview.querySelector('[data-signature-line-end]').insertAdjacentHTML('beforebegin', signatureCtaHtml(current, signatureOptions()));
+}
+
+function updateValidation() {
+  const current = details();
+  for (const key of ['firstName', 'lastName', 'jobTitle']) {
+    form.elements[key].setCustomValidity(current[key] ? '' : t('error.required'));
+  }
+  phone.setCustomValidity(!current.phone ? t('error.required') : validPhone(current.phone) ? '' : t('error.phone'));
+  const invalidCta = Boolean(current.ctaUrl && !ctaHref(current.ctaUrl));
+  ctaUrl.setCustomValidity(invalidCta ? t('error.cta') : '');
+  ctaUrl.setAttribute('aria-invalid', String(invalidCta));
+  ctaHint.textContent = t(invalidCta ? 'error.cta' : 'hint.cta');
+  return invalidCta;
+}
+
+function applyLanguage(next, updateUrl = true) {
+  settleDisclosures();
+  locale = normalizeLocale(next);
+  document.documentElement.lang = locale;
+  document.title = t('meta.title');
+  document.querySelector('meta[name=description]').content = t('meta.description');
+  for (const element of document.querySelectorAll('[data-i18n]')) element.textContent = t(element.dataset.i18n);
+  for (const element of document.querySelectorAll('[data-i18n-html]')) element.innerHTML = t(element.dataset.i18nHtml);
+  for (const element of document.querySelectorAll('[data-i18n-placeholder]')) element.placeholder = t(element.dataset.i18nPlaceholder);
+  for (const element of document.querySelectorAll('[data-i18n-aria-label]')) element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
+  const languageName = locale === 'es-419' ? 'Español' : 'English';
+  document.querySelector('#language-current').textContent = locale === 'es-419' ? 'ES' : 'EN';
+  document.querySelector('#language-trigger').setAttribute('aria-label', `${t('language.choose')}: ${languageName}`);
+  document.querySelector('#language-menu').setAttribute('aria-label', t('language.label'));
+  for (const option of document.querySelectorAll('[data-locale]')) option.setAttribute('aria-checked', String(option.dataset.locale === locale));
+  updateValidation();
+  render();
+  setCopyLabel(copyLabelKey);
+  status.textContent = t(statusKey);
+  if (updateUrl) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', locale);
+    history.replaceState(null, '', url);
+  }
 }
 
 form.addEventListener('input', () => {
   formRevision += 1;
-  phone.setCustomValidity('');
-  const invalidCta = Boolean(details().ctaUrl && !ctaHref(details().ctaUrl));
-  ctaUrl.setCustomValidity(invalidCta ? 'Enter a valid link starting with https:// or http://, or leave this field blank.' : '');
-  ctaUrl.setAttribute('aria-invalid', String(invalidCta));
-  ctaHint.textContent = invalidCta ? 'Enter a valid link starting with https:// or http://, or leave this field blank.' : ctaDefaultHint;
+  const invalidCta = updateValidation();
   render();
-  copyLabel.textContent = 'Copy signature';
+  setCopyLabel('copy.action');
   syncCopyButton();
-  setStatus(invalidCta ? 'Please correct the CTA link or leave it blank' : isFormComplete() ? 'Ready to copy your signature' : 'Please complete all fields');
+  setStatus(invalidCta ? 'status.ctaInvalid' : isFormComplete() ? 'status.ready' : 'status.incomplete');
 });
 
 document.addEventListener('keydown', event => {
@@ -68,7 +115,7 @@ document.addEventListener('keydown', event => {
   if (!event.ctrlKey || !event.shiftKey || event.altKey || event.metaKey || !isQ || event.repeat || event.isComposing) return;
   event.preventDefault();
   for (const field of form.querySelectorAll('input[placeholder]')) {
-    field.value = field.placeholder.replace(/^e\.g\.,?\s*/i, '').trim();
+    field.value = field.placeholder.replace(/^(?:e\.g\.,?|p\.\s*ej\.,?)\s*/i, '').trim();
     field.setCustomValidity('');
   }
   form.dispatchEvent(new Event('input', { bubbles: true }));
@@ -88,22 +135,9 @@ function legacyCopy(html, plain) {
 }
 
 function validateDetails() {
+  updateValidation();
   if (!form.reportValidity()) return null;
-  const current = details();
-  for (const key of ['firstName', 'lastName', 'jobTitle']) {
-    if (!current[key]) {
-      form.elements[key].setCustomValidity('Please fill out this field.');
-      form.elements[key].reportValidity();
-      form.elements[key].addEventListener('input', () => form.elements[key].setCustomValidity(''), { once: true });
-      return null;
-    }
-  }
-  if (!validPhone(current.phone)) {
-    phone.setCustomValidity('Enter a phone number with at least 5 digits. You can include a plus sign, spaces, parentheses and hyphens.');
-    phone.reportValidity();
-    return null;
-  }
-  return current;
+  return details();
 }
 
 form.addEventListener('submit', event => {
@@ -111,8 +145,8 @@ form.addEventListener('submit', event => {
   if (isCopying) return;
   const current = validateDetails();
   if (!current) return;
-  const html = signatureHtml(current);
-  const plain = signatureText(current);
+  const html = signatureHtml(current, signatureOptions());
+  const plain = signatureText(current, signatureOptions());
   const copiedRevision = formRevision;
   isCopying = true;
   syncCopyButton();
@@ -131,17 +165,17 @@ form.addEventListener('submit', event => {
   } catch (error) { operation = Promise.reject(error); }
   operation.then(() => {
     if (copiedRevision !== formRevision) return;
-    copyLabel.textContent = 'Signature copied';
-    setStatus('✅ Copied. Paste it into your email signature settings.', 'success');
-    statusTimer = setTimeout(() => { copyLabel.textContent = 'Copy signature'; }, 5000);
+    setCopyLabel('copy.done');
+    setStatus('status.success', 'success');
+    statusTimer = setTimeout(() => { setCopyLabel('copy.action'); }, 5000);
   }).catch(() => {
     try {
       legacyCopy(html, plain);
       if (copiedRevision !== formRevision) return;
-      copyLabel.textContent = 'Signature copied';
-      setStatus('✅ Copied. Paste it into your email signature settings.', 'success');
+      setCopyLabel('copy.done');
+      setStatus('status.success', 'success');
     } catch {
-      setStatus('Clipboard access is unavailable. Download the HTML file, open it, and copy your signature.', 'error');
+      setStatus('error.clipboard', 'error');
     }
   }).finally(() => {
     isCopying = false;
@@ -152,7 +186,7 @@ form.addEventListener('submit', event => {
 document.querySelector('#download-html').addEventListener('click', () => {
   const current = validateDetails();
   if (!current) return;
-  const url = URL.createObjectURL(new Blob([signatureDocument(current)], { type: 'text/html;charset=utf-8' }));
+  const url = URL.createObjectURL(new Blob([signatureDocument(current, signatureOptions())], { type: 'text/html;charset=utf-8' }));
   const a = document.createElement('a');
   a.href = url;
   const slug = `${current.firstName}-${current.lastName}`.toLowerCase().replace(/[^\p{L}\p{N}-]/gu, '').slice(0, 90);
@@ -187,5 +221,7 @@ reducedMotion.addEventListener('change', () => {
   const image = preview.querySelector('img');
   image.src = signatureImageUrl(localAssets, !reducedMotion.matches);
 });
-render();
+setupLanguageMenu(next => animateLanguageText(() => applyLanguage(next)), reducedMotion);
+window.addEventListener('popstate', () => applyLanguage(normalizeLocale(new URL(window.location.href).searchParams.get('lang')), false));
+applyLanguage(locale, false);
 syncCopyButton();

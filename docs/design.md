@@ -70,3 +70,47 @@ fluid max-width. The status reserves only one line so card edge padding remains
 balanced. Ctrl+Shift+Q fills all six fields directly from their placeholders,
 omitting the “e.g.,” prefix; it refreshes validation and preview without copying
 or restarting the GIF. The form still starts empty on a fresh load.
+
+Local installation-guide addition: Outlook keeps its existing top-level tab and
+now offers three compact disclosure sections: Outlook for Mac, New Outlook / web,
+and Classic Outlook for Windows. Mac opens by default. Each has its actual settings path, paste and
+default-selection steps, and an official Microsoft help link. Only one variant
+opens at a time; JavaScript animates both opening and closing heights. The existing
+Gmail and Apple Mail instructions remain in place. The reference's obsolete
+base64-logo warning is inapplicable to our public HTTPS images and is omitted.
+
+## Local EN/es-419 iteration
+
+The existing en-US interface is the translation source. Both locale catalogs
+have 60 matching keys covering UI, guidance, placeholders, metadata, ARIA and
+dynamic validation/copy feedback. es-419 uses usted. The selector reuses the
+Blueprint globe/capsule/chevron/checkmark pattern, recolored to page #343434;
+it is available at every supported width. The chosen language is kept in the
+URL query, without storing form data. Entered personal details are preserved.
+
+Language changes reuse Blueprint's copy motion: 120ms departure, then a 400ms
+arrival after 240ms from translateY(7px), cubic-bezier(.16,1,.3,1). The GIF node
+is never replaced. Outlook disclosures animate height over 360ms and can be
+reversed before completion. Both motions honor reduced-motion preferences.
+H1 is 2px smaller across the original fluid scale, including the 33px mobile
+override. A separate mobile top row keeps the selector clear of the heading.
+
+Constraint audit removed the fixed 110px contact-table width, helper-text caps
+of 255/440/490px, the mobile subtitle cap and the hidden Live preview state at
+621-800px. Workspace and setup instructions use one column at 800px and below
+to prevent the signature text being squeezed into a very narrow side column.
+The Live preview dot rule now targets only its decorative span. The CTA has
+12px of top spacing in both preview and copied HTML. User-defined 540px signature
+width, logo dimensions, email padding and safety input limits remain intact.
+
+Latest explicit refinements: CTA cell padding is 8px vertically and 10px
+horizontally. The shared address is Altos de Monterey, La Fortuna – Costa Rica.
+Apple guidance starts with the user-requested "On your Apple device" / "En su
+dispositivo Apple". The Mac default-selection sentence was shortened in both
+catalogs without removing account, new-message, reply or forward choices.
+
+Latest local width experiment is 520px (the last publication remains 540px).
+The contact row now uses justified inline blocks around email-safe tables:
+CTA stays right-aligned beside the contacts, then starts at their left edge
+when it wraps beneath them. Its top gap remains 12px; cell padding remains
+8px/10px. Conditional table markup supplies the desktop Outlook fallback.

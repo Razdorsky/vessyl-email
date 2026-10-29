@@ -5,7 +5,7 @@ export const BRAND = Object.freeze({
   website: 'https://thevessyl.com/',
   assets: 'https://razdorsky.github.io/vessyl-email/assets/',
   logoVersion: 'reveal-20261030',
-  address: '500 metros al sur del Supermercado Kike, San Carlos, Alajuela, La Fortuna, Costa Rica.',
+  address: 'Altos de Monterey, La Fortuna – Costa Rica',
 });
 
 export const DEFAULT_DETAILS = Object.freeze({
@@ -59,21 +59,21 @@ function textRun(value, color = BRAND.foreground) {
   return `<font color="${color}" style="color:${color} !important;-webkit-text-fill-color:${color} !important;">${escapeHtml(value)}</font>`;
 }
 
-export function signatureCtaHtml(details) {
+export function signatureCtaHtml(details, { ctaFallback = 'Book a Meeting' } = {}) {
   const d = cleanDetails(details);
   const href = ctaHref(d.ctaUrl);
   if (!href) return '';
-  // Aligned email tables share the contact row and wrap when space is limited.
-  return `<table data-signature-cta role="presentation" align="right" cellpadding="0" cellspacing="0" border="0" bgcolor="${BRAND.foreground}" style="max-width:100%;margin:2px 0 0;border-collapse:separate;border-spacing:0;border-radius:12px;background-color:${BRAND.foreground};"><tbody><tr><td style="padding:9px 14px;border-radius:12px;${textColor(BRAND.background)}"><a href="${escapeHtml(href)}" style="display:block;font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:400;font-size:12px;line-height:18px;text-decoration:none;overflow-wrap:anywhere;${textColor(BRAND.background)}">${textRun(d.ctaLabel || 'Book a Meeting', BRAND.background)}</a></td></tr></tbody></table>`;
+  // A justified inline row puts this at the right until it wraps to a new line.
+  return `<div data-signature-cta style="display:inline-block;max-width:100%;vertical-align:bottom;margin:12px 0 0;text-align:left;font-size:12px;line-height:18px;"><table role="presentation" align="right" cellpadding="0" cellspacing="0" border="0" bgcolor="${BRAND.foreground}" style="max-width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;background-color:${BRAND.foreground};"><tbody><tr><td style="padding:8px 10px;border-radius:12px;${textColor(BRAND.background)}"><a href="${escapeHtml(href)}" style="display:block;font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:400;font-size:12px;line-height:18px;text-decoration:none;overflow-wrap:anywhere;${textColor(BRAND.background)}">${textRun(d.ctaLabel || ctaFallback, BRAND.background)}</a></td></tr></tbody></table></div>\n`;
 }
 
-export function signatureHtml(details, { assets = BRAND.assets, animated = true } = {}) {
+export function signatureHtml(details, { assets = BRAND.assets, animated = true, ctaFallback = 'Book a Meeting' } = {}) {
   const d = cleanDetails(details);
   const name = `${d.firstName} ${d.lastName}`.trim();
   const image = signatureImageUrl(assets, animated);
   const body = 'font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:400;';
   const link = `${body}font-size:12px;line-height:19px;text-decoration:none;${textColor(BRAND.foreground)}`;
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="540" bgcolor="${BRAND.background}" style="width:540px;max-width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;background-color:${BRAND.background};text-align:left;">
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="520" bgcolor="${BRAND.background}" style="width:520px;max-width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;background-color:${BRAND.background};text-align:left;">
 <tbody><tr><td style="padding:16px 24px;border-radius:12px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;table-layout:fixed;"><tbody><tr>
 <td width="120" valign="middle" style="width:120px;vertical-align:middle;"><a href="${BRAND.website}" style="text-decoration:none;${textColor(BRAND.foreground)}"><img src="${escapeHtml(image)}" alt="VESSYL" width="120" height="99" border="0" style="display:block;width:120px;height:99px;border:0;outline:none;text-decoration:none;${textColor(BRAND.foreground)}"></a></td>
@@ -82,25 +82,29 @@ export function signatureHtml(details, { assets = BRAND.assets, animated = true 
 <p style="margin:0 0 3px;font-family:'Telugu MN',Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;line-height:28px;${textColor(BRAND.foreground)}">${textRun(name)}</p>
 <p style="margin:0 0 13px;${body}font-size:12px;line-height:18px;${textColor(BRAND.foreground)}">${textRun(d.jobTitle)}</p>
 <p style="margin:0 0 7px;${body}font-size:12px;line-height:16px;${textColor(BRAND.muted)}">${textRun(BRAND.address, BRAND.muted)}</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;"><tbody><tr><td data-signature-contact style="padding:0;vertical-align:bottom;">
-<table role="presentation" align="left" cellpadding="0" cellspacing="0" border="0" width="110" style="width:110px;max-width:100%;border-collapse:collapse;text-align:left;"><tbody><tr><td style="padding:0;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;"><tbody><tr><td data-signature-contact style="padding:0;vertical-align:bottom;text-align:justify;font-size:0;line-height:0;">
+<!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td valign="bottom"><![endif]-->
+<div data-signature-links style="display:inline-block;max-width:100%;vertical-align:bottom;text-align:left;font-size:12px;line-height:19px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:100%;border-collapse:collapse;text-align:left;"><tbody><tr><td style="padding:0;">
 <p style="margin:0;${body}font-size:12px;line-height:19px;${textColor(BRAND.foreground)}"><a href="${escapeHtml(phoneHref(d.phone))}" style="${link}">${textRun(d.phone)}</a></p>
 <p style="margin:0;${body}font-size:12px;line-height:19px;${textColor(BRAND.foreground)}"><a href="${BRAND.website}" style="${link}text-decoration:underline;text-underline-offset:3px;">${textRun('thevessyl.com')}</a></p>
-</td></tr></tbody></table>
-${signatureCtaHtml(d)}
+</td></tr></tbody></table></div>
+<!--[if mso]></td><td align="right" valign="bottom"><![endif]-->
+${signatureCtaHtml(d, { ctaFallback })}
+<!--[if mso]></td></tr></table><![endif]-->
+<span data-signature-line-end aria-hidden="true" style="display:inline-block;width:100%;height:0;line-height:0;font-size:0;vertical-align:top;">&nbsp;</span>
 </td></tr></tbody></table>
 </td></tr></tbody></table>
 </td></tr></tbody></table>`;
 }
 
-export function signatureText(details) {
+export function signatureText(details, { ctaFallback = 'Book a Meeting' } = {}) {
   const d = cleanDetails(details);
   const lines = [`${d.firstName} ${d.lastName}`.trim(), d.jobTitle, 'VESSYL', BRAND.address, d.phone, BRAND.website];
   const href = ctaHref(d.ctaUrl);
-  if (href) lines.push('', `${d.ctaLabel || 'Book a Meeting'}: ${href}`);
+  if (href) lines.push('', `${d.ctaLabel || ctaFallback}: ${href}`);
   return lines.join('\n');
 }
 
-export function signatureDocument(details) {
-  return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>VESSYL email signature</title></head><body style="margin:0;padding:24px;background:#fff;">${signatureHtml(details)}</body></html>\n`;
+export function signatureDocument(details, { lang = 'en-US', title = 'VESSYL email signature', ...options } = {}) {
+  return `<!doctype html>\n<html lang="${escapeHtml(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(title)}</title></head><body style="margin:0;padding:24px;background:#fff;">${signatureHtml(details, options)}</body></html>\n`;
 }

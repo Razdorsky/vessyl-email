@@ -6,7 +6,8 @@ to preserve WebKit user activation. The deployed site uses HTTPS. A copy-event
 fallback supports browsers without Async Clipboard; failures expose the manual
 HTML-download route rather than reporting a false success.
 
-The HTML is under 4 KB without an optional CTA, uses presentation tables,
+Typical output is about 4,200 HTML characters without CTA and 5,100 with CTA.
+It uses presentation tables,
 cell padding, explicit image dimensions and inline styles. It does not rely on
 JavaScript, a stylesheet, data/blob URLs, base64 images, flexbox or grid in email.
 Both links and user-controlled text are escaped/normalized. The form and HTML
@@ -17,6 +18,14 @@ Optional CTA URLs allow HTTP(S), reject embedded credentials and unsafe schemes,
 and are escaped before insertion. Missing/invalid links produce no CTA in the
 serializer. A valid link is retained in rich HTML, plain text and the download;
 the button uses table/cell styling and explicit text-run colors.
+
+The contact row uses justified inline blocks so the CTA is right-aligned on
+the shared row and left-aligned after wrapping. A zero-height line-ending
+spacer supplies justification without a stylesheet or client-side script.
+MSO conditional tables provide the classic Outlook desktop fallback; these
+comments survived the actual HTML clipboard round trip. Both normal and MSO
+HTML branches were structurally checked. This does not replace native-client
+rendering tests.
 
 ## Primary sources consulted
 
@@ -29,6 +38,8 @@ the button uses table/cell styling and explicit text-run colors.
   the default-message-font setting can override signature typography.
 - Microsoft [Outlook signature instructions](https://support.microsoft.com/en-us/outlook/mail/how-to-add-and-change-an-email-signature-in-outlook):
   new Outlook/web Accounts → Signatures; classic Outlook has its own editor.
+- Microsoft [Outlook for Mac instructions](https://support.microsoft.com/en-us/outlook/create-insert-or-change-a-signature-in-outlook-for-mac):
+  Outlook Settings → Signatures, with defaults selected separately per account.
 - Microsoft [Animated GIF support](https://support.microsoft.com/en-au/outlook/the-animated-graphic-in-my-e-mail-message-doesn-t-work):
   first frame when animation is disabled.
 - Google [Gmail CSS support](https://developers.google.com/workspace/gmail/design/css)

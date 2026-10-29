@@ -10,6 +10,11 @@ uses “Book a Meeting”; without a link no button is included.
 email app’s signature settings. The page includes instructions for Gmail, Apple
 Mail on Mac and Outlook. **Download HTML** is an additional manual-install route.
 
+The local iteration adds English and Latin American Spanish (es-419), selected
+with the globe menu. Direct Spanish entry: `?lang=es-419`. Ctrl+Shift+Q fills
+the fields from the current language's examples. Form entries are preserved
+when the interface language changes.
+
 ## Brand and exported signature
 
 - Page background: graphite `#343434`, per the latest user direction.
@@ -18,7 +23,7 @@ Mail on Mac and Outlook. **Download HTML** is an additional manual-install route
   3.390 seconds, 113 frames, 32,031 bytes. The complete first frame supports clients with animation off.
 - Telugu MN for the name/display text where installed; Georgia is the fallback.
   Self-hosted Roboto for the builder; the email body uses Roboto/Arial/Helvetica.
-- Fixed property address preserved from the supplied current signature. Website
+- Shared address in both locales: Altos de Monterey, La Fortuna – Costa Rica. Website
   text and destination both use https://thevessyl.com/. Phone is a `tel:` link.
 - Selectable live text, presentation tables and inline CSS. Exported images
   use the public absolute HTTPS URL under this site, never localhost/data URLs.
