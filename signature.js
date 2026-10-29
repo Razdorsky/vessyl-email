@@ -73,7 +73,7 @@ export function signatureHtml(details, { assets = BRAND.assets, animated = true 
   const image = signatureImageUrl(assets, animated);
   const body = 'font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:400;';
   const link = `${body}font-size:12px;line-height:19px;text-decoration:none;${textColor(BRAND.foreground)}`;
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="500" bgcolor="${BRAND.background}" style="width:500px;max-width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;background-color:${BRAND.background};text-align:left;">
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="540" bgcolor="${BRAND.background}" style="width:540px;max-width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;background-color:${BRAND.background};text-align:left;">
 <tbody><tr><td style="padding:16px 24px;border-radius:12px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;table-layout:fixed;"><tbody><tr>
 <td width="120" valign="middle" style="width:120px;vertical-align:middle;"><a href="${BRAND.website}" style="text-decoration:none;${textColor(BRAND.foreground)}"><img src="${escapeHtml(image)}" alt="VESSYL" width="120" height="99" border="0" style="display:block;width:120px;height:99px;border:0;outline:none;text-decoration:none;${textColor(BRAND.foreground)}"></a></td>

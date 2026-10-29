@@ -64,3 +64,9 @@ The optional CTA is right-aligned at the bottom of the signature opposite the
 phone/website pair. Email-safe aligned tables share the row, wrapping the CTA
 below the links when a narrow viewport cannot fit both. Preview, clipboard and
 download use the same structure; typing preserves the existing animated image.
+
+Refinements approved for publication: signature width is 540 px with the same
+fluid max-width. The status reserves only one line so card edge padding remains
+balanced. Ctrl+Shift+Q fills all six fields directly from their placeholders,
+omitting the “e.g.,” prefix; it refreshes validation and preview without copying
+or restarting the GIF. The form still starts empty on a fresh load.

@@ -63,6 +63,17 @@ form.addEventListener('input', () => {
   setStatus(invalidCta ? 'Please correct the CTA link or leave it blank' : isFormComplete() ? 'Ready to copy your signature' : 'Please complete all fields');
 });
 
+document.addEventListener('keydown', event => {
+  const isQ = event.code === 'KeyQ' || event.key?.toLowerCase() === 'q';
+  if (!event.ctrlKey || !event.shiftKey || event.altKey || event.metaKey || !isQ || event.repeat || event.isComposing) return;
+  event.preventDefault();
+  for (const field of form.querySelectorAll('input[placeholder]')) {
+    field.value = field.placeholder.replace(/^e\.g\.,?\s*/i, '').trim();
+    field.setCustomValidity('');
+  }
+  form.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
 function legacyCopy(html, plain) {
   const listener = event => {
     event.preventDefault();
