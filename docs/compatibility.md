@@ -19,6 +19,10 @@ and are escaped before insertion. Missing/invalid links produce no CTA in the
 serializer. A valid link is retained in rich HTML, plain text and the download;
 the button uses table/cell styling and explicit text-run colors.
 
+Website links (including the logo) and the optional CTA use `target="_blank"`
+with `rel="noopener noreferrer"` in preview, copied HTML and downloaded HTML.
+The receiving email client retains control over the final link-opening behavior.
+
 The contact row uses justified inline blocks so the CTA is right-aligned on
 the shared row and left-aligned after wrapping. A zero-height line-ending
 spacer supplies justification without a stylesheet or client-side script.
