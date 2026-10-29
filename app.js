@@ -1,4 +1,4 @@
-import { cleanDetails, signatureHtml, signatureText, signatureDocument, validPhone } from './signature.js';
+import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, validPhone } from './signature.js';
 
 const form = document.querySelector('#signature-form');
 const preview = document.querySelector('#signature-preview');
@@ -9,8 +9,18 @@ const phone = form.elements.phone;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const localAssets = new URL('./assets/', window.location.href).href;
 let statusTimer;
+let isCopying = false;
+let formRevision = 0;
 
 function details() { return cleanDetails(Object.fromEntries(new FormData(form))); }
+function isFormComplete() {
+  const current = details();
+  return Boolean(current.firstName && current.lastName && current.jobTitle && validPhone(current.phone));
+}
+function syncCopyButton() {
+  copyButton.disabled = isCopying || !isFormComplete();
+  copyButton.setAttribute('aria-busy', String(isCopying));
+}
 function setStatus(message, state = '') {
   clearTimeout(statusTimer);
   status.textContent = message;
@@ -21,21 +31,26 @@ function render() {
   // Update text in place so typing never restarts the logo animation.
   if (!preview.firstElementChild) {
     preview.innerHTML = signatureHtml(current, { assets: localAssets, animated: !reducedMotion.matches });
-  } else {
-    const paragraphs = preview.querySelectorAll('p');
-    paragraphs[0].textContent = `${current.firstName} ${current.lastName}`.trim() || 'Your name';
-    paragraphs[1].textContent = current.jobTitle || 'Your job title';
-    const phoneLink = paragraphs[3].querySelector('a');
-    phoneLink.textContent = current.phone || 'Your phone number';
+  }
+  const paragraphs = preview.querySelectorAll('p');
+  paragraphs[0].textContent = `${current.firstName} ${current.lastName}`.trim() || 'Your name';
+  paragraphs[1].textContent = current.jobTitle || 'Your job title';
+  const phoneLink = paragraphs[3].querySelector('a');
+  phoneLink.textContent = current.phone || 'Your phone number';
+  if (current.phone) {
     phoneLink.href = `tel:${current.phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '')}`;
+  } else {
+    phoneLink.removeAttribute('href');
   }
 }
 
 form.addEventListener('input', () => {
+  formRevision += 1;
   phone.setCustomValidity('');
   render();
   copyLabel.textContent = 'Copy signature';
-  setStatus('Your details stay in this browser.');
+  syncCopyButton();
+  setStatus(isFormComplete() ? 'Ready to copy your signature' : 'Please complete all fields');
 });
 
 function legacyCopy(html, plain) {
@@ -56,14 +71,14 @@ function validateDetails() {
   const current = details();
   for (const key of ['firstName', 'lastName', 'jobTitle']) {
     if (!current[key]) {
-      form.elements[key].setCustomValidity('Please enter your details.');
+      form.elements[key].setCustomValidity('Please fill out this field.');
       form.elements[key].reportValidity();
       form.elements[key].addEventListener('input', () => form.elements[key].setCustomValidity(''), { once: true });
       return null;
     }
   }
   if (!validPhone(current.phone)) {
-    phone.setCustomValidity('Enter a phone number with at least 5 digits. You can include +, spaces, parentheses and hyphens.');
+    phone.setCustomValidity('Enter a phone number with at least 5 digits. You can include a plus sign, spaces, parentheses and hyphens.');
     phone.reportValidity();
     return null;
   }
@@ -72,11 +87,14 @@ function validateDetails() {
 
 form.addEventListener('submit', event => {
   event.preventDefault();
+  if (isCopying) return;
   const current = validateDetails();
   if (!current) return;
   const html = signatureHtml(current);
   const plain = signatureText(current);
-  copyButton.disabled = true;
+  const copiedRevision = formRevision;
+  isCopying = true;
+  syncCopyButton();
   // Do not await anything before writing: Safari requires this user activation.
   let operation;
   try {
@@ -91,18 +109,23 @@ form.addEventListener('submit', event => {
     }
   } catch (error) { operation = Promise.reject(error); }
   operation.then(() => {
+    if (copiedRevision !== formRevision) return;
     copyLabel.textContent = 'Signature copied';
     setStatus('✅ Copied. Paste it into your email signature settings.', 'success');
     statusTimer = setTimeout(() => { copyLabel.textContent = 'Copy signature'; }, 5000);
   }).catch(() => {
     try {
       legacyCopy(html, plain);
+      if (copiedRevision !== formRevision) return;
       copyLabel.textContent = 'Signature copied';
       setStatus('✅ Copied. Paste it into your email signature settings.', 'success');
     } catch {
-      setStatus('Clipboard access is unavailable. Download HTML, open it and copy the signature from there.', 'error');
+      setStatus('Clipboard access is unavailable. Download the HTML file, open it, and copy your signature.', 'error');
     }
-  }).finally(() => { copyButton.disabled = false; });
+  }).finally(() => {
+    isCopying = false;
+    syncCopyButton();
+  });
 });
 
 document.querySelector('#download-html').addEventListener('click', () => {
@@ -141,6 +164,7 @@ for (const tab of tabs) {
 }
 reducedMotion.addEventListener('change', () => {
   const image = preview.querySelector('img');
-  image.src = new URL(reducedMotion.matches ? 'vessyl-signature-static.png' : 'vessyl-signature.gif', localAssets).href;
+  image.src = signatureImageUrl(localAssets, !reducedMotion.matches);
 });
 render();
+syncCopyButton();

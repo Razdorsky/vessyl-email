@@ -7,7 +7,7 @@ test('copied signature is small HTML with public GIF and working business links'
   assert.ok(html.length < 9000);
   assert.match(html, /<table role="presentation"/);
   assert.match(html, /bgcolor="#311500"/);
-  assert.match(html, /src="https:\/\/razdorsky.github.io\/vessyl-email\/assets\/vessyl-signature.gif"/);
+  assert.match(html, /src="https:\/\/razdorsky.github.io\/vessyl-email\/assets\/vessyl-signature.gif\?v=reveal-20261030"/);
   assert.match(html, /href="tel:\+50662233344"/);
   assert.match(html, /href="https:\/\/thevessyl.com\/"/);
   assert.match(html, /alt="VESSYL"/);

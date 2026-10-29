@@ -11,8 +11,8 @@ Mail on Mac and Outlook. **Download HTML** is an additional manual-install route
 
 - Page background: graphite `#343434`, per the latest user direction.
 - Signature background: VESSYL dark copper `#311500`; warm light text.
-- Official VESSYL-only seal and wordmark. Animated six-second GIF, 26 frames,
-  150,808 bytes. The complete first frame supports clients with animation off.
+- Official VESSYL-only seal and wordmark. Animated bottom-to-top reveal GIF matching the supplied reference’s motion:
+  3.390 seconds, 113 frames, 32,031 bytes. The complete first frame supports clients with animation off.
 - Telugu MN for the name/display text where installed; Georgia is the fallback.
   Self-hosted Roboto for the builder; the email body uses Roboto/Arial/Helvetica.
 - Fixed property address preserved from the supplied current signature. Website

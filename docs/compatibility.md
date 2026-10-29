@@ -37,3 +37,6 @@ responsive rendering, image loading, validation and installation controls.
 No email is sent and no user’s actual signature settings are changed. This is
 not a claim of a full native-client send/receive matrix. Fonts may fall back;
 recipients may disable remote images or animation.
+
+GIF URLs carry a revision query, preventing the previous breathing animation
+from persisting in image-proxy caches when a new signature is copied.

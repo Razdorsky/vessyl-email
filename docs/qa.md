@@ -20,3 +20,33 @@
 - GIF verified independently: 300 × 248, 26 frames, 6.000 s, 150,808 bytes;
   decoded first/midpoint frame hashes differ. Official lockup visible in frame 1.
 - Additional main bottom padding: 40 px. No header, footer or section numbering.
+
+## Local-only animation revision
+
+The user requires the reference’s bottom-up reveal on our own unchanged SVG.
+Independent decoding confirms113frames/3.390s,60distinct states and opaque
+#311500. Full first frame, wordmark-then-seal reveal and original frame delays
+are preserved. No reference raster is rendered or modified. Current local GIF
+is32,031bytes; displayed at120×99px. The signature has12px rounded corners.
+The user subsequently approved these revisions for publication.
+
+Local empty-form state verified in Chrome: empty and partial forms keep Copy
+disabled; a complete valid form enables it and copies successfully; replacing
+a required name with spaces disables it again and restores the prompt.
+
+Local en-US review covers headings, labels, placeholders, all three client
+guides, metadata, accessibility labels and validation/clipboard messages.
+Signature wording was excluded. Separately authorized signature layout was
+verified in Chrome: padding24px; name24px; role/address/phone/site12px.
+
+## Release verification after approval
+
+- Local Clipboard API round trip passed: the actual Copy button wrote HTML and
+  plain text; the local rich-text editor read the HTML representation and
+  retained both presentation tables, the image, website/tel links, 24px padding
+  and 12px corners. Native keyboard-paste transport limitations above remain
+  separate; no actual email account settings were changed.
+- Final 360/375/768/1440px browser checks show no horizontal overflow and correct
+  responsive top/bottom spacing. The empty form keeps Copy disabled.
+- Exported and preview image URLs use the same reveal-20261030 revision query.
+- Five tests, JavaScript syntax checks and static build pass.

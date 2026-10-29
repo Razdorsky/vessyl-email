@@ -1,13 +1,15 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-// ImageMagick 7 is the only build-time dependency. No browser, network or fonts.
+// Render only our official VESSYL SVG. The reference supplies timing, not pixels.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(join(tmpdir(), 'vessyl-signature-logo-'));
-const source = readFileSync(join(root, 'assets/vessyl-logo.svg'), 'utf8');
+const source = join(root, 'assets/vessyl-logo.svg');
+const complete = join(work, 'complete.png');
+const trace = JSON.parse(readFileSync(join(root, 'assets/animation-reveal.json'), 'utf8'));
 const magick = process.env.MAGICK_BIN || 'magick';
 const background = '#311500';
 
@@ -16,49 +18,42 @@ function run(args) {
   if (result.status !== 0) throw new Error(result.stderr || result.error?.message);
 }
 
-function frame(opacity, name) {
-  const svg = join(work, `${name}.svg`);
+function frame(clipTop, name) {
   const png = join(work, `${name}.png`);
-  // The first path is the official seal. Letterforms stay fully visible.
-  // Opacity changes light only; coordinates and shape remain untouched.
-  const markup = source.replace(
-    '<path class="cls-1"',
-    `<path opacity="${opacity.toFixed(5)}" class="cls-1"`,
-  );
-  writeFileSync(svg, markup);
-  run([
-    '-background', background, svg,
-    '-alpha', 'remove', '-alpha', 'off',
-    '-resize', '300x248!', '-depth', '8', '-strip', png,
-  ]);
+  const [, y, , height] = trace.viewBox;
+  const cut = clipTop === null ? 248 : Math.max(0, Math.min(248, Math.ceil((clipTop - y) * 248 / height)));
+  if (cut === 0) {
+    copyFileSync(complete, png);
+  } else {
+    // Mask only pixels rendered from our SVG; no reference image is ever read.
+    run([complete, '+antialias', '-fill', background, '-stroke', 'none',
+      '-draw', `rectangle 0,0 299,${cut - 1}`, '-strip', png]);
+  }
   return png;
 }
 
 try {
-  const complete = frame(1, 'complete');
-  run([complete, '-strip', join(root, 'assets/vessyl-signature-static.png')]);
-
-  // 1.8 s complete hold + 2.4 s soft breathing + 1.8 s complete hold.
-  // A first-frame-only email client always shows the full official lockup.
-  const frames = ['-delay', '180', complete];
-  const images = [complete];
-  for (let i = 1; i <= 24; i++) {
-    const phase = i / 24;
-    const opacity = 1 - 0.18 * Math.sin(Math.PI * phase) ** 2;
-    const image = frame(opacity, `breath-${String(i).padStart(2, '0')}`);
-    images.push(image);
-    frames.push('-delay', '10', image);
-  }
-  frames.push('-delay', '180', complete);
-  // One palette prevents static letter edges from changing between frames.
+  run(['-background', background, source, '-alpha', 'remove', '-alpha', 'off',
+    '-resize', '300x248!', '-depth', '8', '-strip', complete]);
   const palette = join(work, 'palette.png');
-  run([...images, '-append', '+dither', '-colors', '128', '-unique-colors', palette]);
+  run([complete, '+dither', '-colors', '128', '-unique-colors', palette]);
+
+  // Start the identical cycle at its complete-logo hold for static-only clients.
+  const start = trace.firstCompleteFrame;
+  const ordered = [...trace.frames.slice(start), ...trace.frames.slice(0, start)];
+  const frames = [];
+  for (const [index, step] of ordered.entries()) {
+    const image = frame(step.clipTop, `reveal-${String(index).padStart(3, '0')}`);
+    frames.push('-delay', String(step.delayMs / 10), image);
+  }
+  const gif = join(work, 'vessyl-signature.gif');
   run([
     ...frames, '+dither', '-remap', palette,
-    '-loop', '0', '-layers', 'Optimize', '-strip',
-    join(root, 'assets/vessyl-signature.gif'),
+    '-loop', '0', '-layers', 'Optimize', '-strip', gif,
   ]);
-  console.log('Generated VESSYL GIF and static PNG (300 × 248 px, #311500).');
+  copyFileSync(gif, join(root, 'assets/vessyl-signature.gif'));
+  copyFileSync(complete, join(root, 'assets/vessyl-signature-static.png'));
+  console.log('Generated official VESSYL reveal: 113 source frames, 3.390 s, #311500.');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
