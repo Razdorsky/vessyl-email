@@ -39,12 +39,12 @@ re-evaluates availability. Preview uses generic labels until values are entered.
 Preview window chrome uses decorative macOS-style red, yellow and green
 12 px traffic lights, spaced by 8 px. These are not part of the exported signature.
 
-Signature spacing/type revision: 16 px top/bottom and 24 px side padding, name
+Signature spacing/type revision: 12 px top, 14 px bottom and 24 px side padding, name
 24 px, role/address/phone/website 12 px. Signature wording is unchanged.
 The surrounding interface has undergone en-US proofreading, including hidden
 client guides, example punctuation and validation/clipboard messages.
 
-The 16 px vertical signature padding was approved for publication on 2026-10-30.
+The latest vertical signature padding is 12px top / 14px bottom.
 
 Optional CTA fields follow the CLT Labs reference's behavior: a valid
 HTTP(S) link adds a button next to the contact links, with “Book a Meeting” as the
@@ -109,7 +109,11 @@ Apple guidance starts with the user-requested "On your Apple device" / "En su
 dispositivo Apple". The Mac default-selection sentence was shortened in both
 catalogs without removing account, new-message, reply or forward choices.
 
-Latest local width experiment is 520px (the last publication remains 540px).
+Current maximum signature width is 500px without a valid CTA link and 520px
+with one. Preview, clipboard HTML and downloaded HTML share this rule; the
+preview resizes in place without restarting the logo animation.
+Signature inner padding is 12px at the top, 14px at the bottom and 24px at
+each side.
 The contact row now uses justified inline blocks around email-safe tables:
 CTA stays right-aligned beside the contacts, then starts at their left edge
 when it wraps beneath them. Its top gap remains 12px; cell padding remains

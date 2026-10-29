@@ -1,4 +1,4 @@
-import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, signatureCtaHtml, ctaHref, validPhone } from './signature.js';
+import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, signatureCtaHtml, signatureWidth, ctaHref, validPhone } from './signature.js';
 import { messages } from './locales.js';
 import { setupDisclosureMotion, setupLanguageMenu, setupLanguageTextMotion } from './ui.js';
 
@@ -48,6 +48,9 @@ function render() {
   if (!preview.firstElementChild) {
     preview.innerHTML = signatureHtml(current, { assets: localAssets, animated: !reducedMotion.matches, ...signatureOptions() });
   }
+  const width = signatureWidth(current);
+  preview.firstElementChild.setAttribute('width', String(width));
+  preview.firstElementChild.style.width = `${width}px`;
   const paragraphs = preview.querySelectorAll('p');
   paragraphs[0].querySelector('font').textContent = `${current.firstName} ${current.lastName}`.trim() || t('preview.name');
   paragraphs[1].querySelector('font').textContent = current.jobTitle || t('preview.role');
