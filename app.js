@@ -1,4 +1,4 @@
-import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, validPhone } from './signature.js';
+import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, signatureCtaHtml, ctaHref, validPhone } from './signature.js';
 
 const form = document.querySelector('#signature-form');
 const preview = document.querySelector('#signature-preview');
@@ -6,6 +6,9 @@ const status = document.querySelector('#copy-status');
 const copyButton = document.querySelector('#copy-signature');
 const copyLabel = copyButton.querySelector('span');
 const phone = form.elements.phone;
+const ctaUrl = form.elements.ctaUrl;
+const ctaHint = document.querySelector('#cta-hint');
+const ctaDefaultHint = ctaHint.textContent;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const localAssets = new URL('./assets/', window.location.href).href;
 let statusTimer;
@@ -15,7 +18,8 @@ let formRevision = 0;
 function details() { return cleanDetails(Object.fromEntries(new FormData(form))); }
 function isFormComplete() {
   const current = details();
-  return Boolean(current.firstName && current.lastName && current.jobTitle && validPhone(current.phone));
+  return Boolean(current.firstName && current.lastName && current.jobTitle && validPhone(current.phone)
+    && (!current.ctaUrl || ctaHref(current.ctaUrl)));
 }
 function syncCopyButton() {
   copyButton.disabled = isCopying || !isFormComplete();
@@ -33,24 +37,30 @@ function render() {
     preview.innerHTML = signatureHtml(current, { assets: localAssets, animated: !reducedMotion.matches });
   }
   const paragraphs = preview.querySelectorAll('p');
-  paragraphs[0].textContent = `${current.firstName} ${current.lastName}`.trim() || 'Your name';
-  paragraphs[1].textContent = current.jobTitle || 'Your job title';
+  paragraphs[0].querySelector('font').textContent = `${current.firstName} ${current.lastName}`.trim() || 'Your name';
+  paragraphs[1].querySelector('font').textContent = current.jobTitle || 'Your job title';
   const phoneLink = paragraphs[3].querySelector('a');
-  phoneLink.textContent = current.phone || 'Your phone number';
+  phoneLink.querySelector('font').textContent = current.phone || 'Your phone number';
   if (current.phone) {
     phoneLink.href = `tel:${current.phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '')}`;
   } else {
     phoneLink.removeAttribute('href');
   }
+  preview.querySelector('[data-signature-cta]')?.remove();
+  preview.querySelector('[data-signature-contact]').insertAdjacentHTML('beforeend', signatureCtaHtml(current));
 }
 
 form.addEventListener('input', () => {
   formRevision += 1;
   phone.setCustomValidity('');
+  const invalidCta = Boolean(details().ctaUrl && !ctaHref(details().ctaUrl));
+  ctaUrl.setCustomValidity(invalidCta ? 'Enter a valid link starting with https:// or http://, or leave this field blank.' : '');
+  ctaUrl.setAttribute('aria-invalid', String(invalidCta));
+  ctaHint.textContent = invalidCta ? 'Enter a valid link starting with https:// or http://, or leave this field blank.' : ctaDefaultHint;
   render();
   copyLabel.textContent = 'Copy signature';
   syncCopyButton();
-  setStatus(isFormComplete() ? 'Ready to copy your signature' : 'Please complete all fields');
+  setStatus(invalidCta ? 'Please correct the CTA link or leave it blank' : isFormComplete() ? 'Ready to copy your signature' : 'Please complete all fields');
 });
 
 function legacyCopy(html, plain) {

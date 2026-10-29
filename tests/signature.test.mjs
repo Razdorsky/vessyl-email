@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { signatureHtml, signatureText, signatureDocument, cleanDetails, validPhone, DEFAULT_DETAILS, BRAND } from '../signature.js';
+import { signatureHtml, signatureText, signatureDocument, cleanDetails, validPhone, ctaHref, DEFAULT_DETAILS, BRAND } from '../signature.js';
 
 test('copied signature is small HTML with public GIF and working business links', () => {
   const html = signatureHtml(DEFAULT_DETAILS);
@@ -38,4 +38,25 @@ test('downloaded HTML keeps absolute public image URLs; preview alone may use a 
   assert.match(signatureDocument(DEFAULT_DETAILS), /^<!doctype html>/);
   assert.match(signatureDocument(DEFAULT_DETAILS), /https:\/\/razdorsky.github.io\/vessyl-email\/assets\/vessyl-signature.gif/);
   assert.match(signatureHtml(DEFAULT_DETAILS, { assets: 'http://127.0.0.1:4178/assets/', animated: false }), /vessyl-signature-static.png/);
+});
+test('CTA stays optional, uses a fallback label, and is retained in every export', () => {
+  assert.doesNotMatch(signatureHtml({ ...DEFAULT_DETAILS, ctaLabel: 'Schedule time with me' }), /data-signature-cta/);
+  const details = { ...DEFAULT_DETAILS, ctaUrl: 'https://cal.com/example?event=meet&team=vessyl' };
+  for (const html of [signatureHtml(details), signatureDocument(details)]) {
+    assert.match(html, /data-signature-cta/);
+    assert.match(html, /href="https:\/\/cal.com\/example\?event=meet&amp;team=vessyl"/);
+    assert.match(html, /Book a Meeting/);
+  }
+  assert.match(signatureText(details), /Book a Meeting: https:\/\/cal.com\/example\?event=meet&team=vessyl/);
+  const custom = { ...details, ctaLabel: 'Schedule <time> & meet' };
+  assert.match(signatureHtml(custom), /Schedule &lt;time&gt; &amp; meet/);
+  assert.match(signatureText(custom), /Schedule <time> & meet/);
+});
+test('CTA cannot turn clipboard HTML into a script, relative link or credential-bearing link', () => {
+  for (const ctaUrl of ['javascript:alert(1)', 'data:text/html,test', '/relative', '//example.com', 'not a link', 'https://user:password@example.com']) {
+    assert.equal(ctaHref(ctaUrl), '');
+    const details = { ...DEFAULT_DETAILS, ctaUrl, ctaLabel: '<img src=x onerror=alert(1)>' };
+    assert.doesNotMatch(signatureHtml(details), /data-signature-cta|<img src=x/);
+    assert.doesNotMatch(signatureText(details), /alert|password/);
+  }
 });

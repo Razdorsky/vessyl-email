@@ -6,12 +6,17 @@ to preserve WebKit user activation. The deployed site uses HTTPS. A copy-event
 fallback supports browsers without Async Clipboard; failures expose the manual
 HTML-download route rather than reporting a false success.
 
-The HTML is under 4 KB for the default signature, uses presentation tables,
+The HTML is under 4 KB without an optional CTA, uses presentation tables,
 cell padding, explicit image dimensions and inline styles. It does not rely on
 JavaScript, a stylesheet, data/blob URLs, base64 images, flexbox or grid in email.
 Both links and user-controlled text are escaped/normalized. The form and HTML
 download share validation. International names and ordinary phone formatting
 are preserved.
+
+Optional CTA URLs allow HTTP(S), reject embedded credentials and unsafe schemes,
+and are escaped before insertion. Missing/invalid links produce no CTA in the
+serializer. A valid link is retained in rich HTML, plain text and the download;
+the button uses table/cell styling and explicit text-run colors.
 
 ## Primary sources consulted
 
@@ -40,3 +45,30 @@ recipients may disable remote images or animation.
 
 GIF URLs carry a revision query, preventing the previous breathing animation
 from persisting in image-proxy caches when a new signature is copied.
+
+## iPad saved-signature color rewrite — published safeguard
+
+The user's settings screenshot preserves white name/title text, but the new
+message screenshot turns them black. Read-only inspection of the received
+Test message confirms its name/title paragraphs have lost their own color;
+the outer table retains a foreground color, while address/link colors survive.
+This establishes the changed HTML state, not a precise diagnosis of UIKit's
+internal algorithm.
+
+Each of the five text lines now has direct CSS color/text-fill and a separate
+legacy font-color attribute on the actual text run. The text cell repeats its
+copper bgcolor/background. Table/cell foreground inheritance was removed so
+line colors stand alone. Logo alt text also has explicit light color.
+Preview edits update the text runs without deleting their formatting.
+
+The captured clipboard HTML was rendered and all ancestor block colors forced
+to black in a bounded browser fixture: all five actual text runs retained the
+correct light/muted colors. This is not an iPad Mail emulator. Reinstall the
+candidate signature and open a new message on the affected iPad to confirm.
+No real account signature settings were changed and no messages were sent.
+
+Primary implementation context: WebKit documents
+[clipboard reserialization](https://webkit.org/blog/8170/clipboard-api-improvements/)
+and [text-fill behavior](https://webkit.org/blog/85/introducing-text-stroke/).
+Its [Mail color adaptation change](https://github.com/WebKit/WebKit/commit/e1bc930edef95d5fe08fe76b2a195b82c9123790)
+is related context, not proof that the same underlying bug is involved.

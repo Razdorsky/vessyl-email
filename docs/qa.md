@@ -50,3 +50,35 @@ verified in Chrome: padding24px; name24px; role/address/phone/site12px.
   responsive top/bottom spacing. The empty form keeps Copy disabled.
 - Exported and preview image URLs use the same reveal-20261030 revision query.
 - Five tests, JavaScript syntax checks and static build pass.
+
+## Local iPad-color hardening
+
+Received Test HTML and the two additional device screenshots locate the issue
+between saved settings and new-message insertion. Name/title paragraph colors
+are absent in the received source. All five copied text runs now carry direct
+color safeguards. Actual Copy payload had both MIME types and five text runs;
+forcing all ancestor blocks to black retained RGB245/235/231 on name, role,
+phone and website and RGB216/196/183 on the address. Native iPad confirmation
+is still pending. This fix and the 16px vertical padding were approved for publication.
+
+## Local optional CTA
+
+Reference inspected at https://signatures.cltlabs.com/: an optional link adds a
+button, and its label defaults to Book a Meeting. VESSYL now has the same
+optional behavior in its own palette. Browser checks verify required-fields
+copying without CTA, URL-only fallback, custom label, invalid-link feedback,
+and removal when the link is cleared. The real Copy button produced both HTML
+and plain-text representations containing the custom label and destination.
+Desktop and 360px mobile show no horizontal overflow; logo loads. Seven tests,
+syntax checks and static build pass. The user supplied Instagram as the link
+placeholder. These changes were approved for publication; no native Mail test is claimed.
+
+## Publication checkpoint, 2026-10-30
+
+CTA sits at the lower right opposite the contact links in both preview and the
+actual HTML clipboard payload. At 375px it wraps beneath them without overflow;
+desktop bottom edges align. Seven tests, syntax checks and production build pass.
+The prior clipboard-API rich insertion check remains documented above. The
+latest native automated paste transferred the plain-text representation, while
+Clipboard API inspection confirms both MIME types; this automation limitation
+is not a native email-client compatibility result. No extended QA was repeated.

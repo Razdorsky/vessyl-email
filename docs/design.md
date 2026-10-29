@@ -31,7 +31,7 @@ The signature table and outer cell use the same 12 px corner radius as the
 Copy signature button, included in both preview and exported inline HTML.
 
 Fields start empty, with gray example placeholders. Copy remains disabled until
-all cleaned fields are present and the phone is valid. The initial/partial
+all four required fields are present and the phone is valid. The initial/partial
 prompt is “Please complete all fields”; a complete form says “Ready to copy
 your signature”. Editing or clearing a field resets copied feedback and
 re-evaluates availability. Preview uses generic labels until values are entered.
@@ -39,7 +39,28 @@ re-evaluates availability. Preview uses generic labels until values are entered.
 Preview window chrome uses decorative macOS-style red, yellow and green
 12 px traffic lights, spaced by 8 px. These are not part of the exported signature.
 
-Local signature spacing/type revision: 24 px padding on all four sides, name
+Signature spacing/type revision: 16 px top/bottom and 24 px side padding, name
 24 px, role/address/phone/website 12 px. Signature wording is unchanged.
 The surrounding interface has undergone en-US proofreading, including hidden
 client guides, example punctuation and validation/clipboard messages.
+
+The 16 px vertical signature padding was approved for publication on 2026-10-30.
+
+Optional CTA fields follow the CLT Labs reference's behavior: a valid
+HTTP(S) link adds a button next to the contact links, with “Book a Meeting” as the
+fallback label. A label without a link does not add anything. The button uses
+the VESSYL cream/copper palette and 12 px corners; its text has the same direct
+color safeguards as the existing lines. Invalid URLs disable Copy with an
+explanation. HTML, plain-text clipboard and downloaded HTML retain the CTA.
+
+Form-spacing refinement: intervals within Provide your details were reduced
+by 2 px on desktop/tablet and by 1 px at 620 px and below. Heading/form: 25/23 px;
+field groups: 19/17 px; label/input and input/hint: 6/7 px; paired names: 12/11 px;
+last hint/Copy: 22/20 px; Copy/status: 11/12 px. Card/input padding and exported
+signature geometry are unaffected. CTA link placeholder is the user-supplied
+https://www.instagram.com/thevessyl.
+
+The optional CTA is right-aligned at the bottom of the signature opposite the
+phone/website pair. Email-safe aligned tables share the row, wrapping the CTA
+below the links when a narrow viewport cannot fit both. Preview, clipboard and
+download use the same structure; typing preserves the existing animated image.

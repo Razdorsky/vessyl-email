@@ -3,6 +3,9 @@
 Live: https://razdorsky.github.io/vessyl-email/
 
 Enter first name, last name, job title and phone number; preview updates immediately.
+Optional CTA label/link fields add a button at the lower right, beside the phone
+and website. A link alone
+uses “Book a Meeting”; without a link no button is included.
 **Copy signature** writes rich HTML and plain text to the clipboard. Paste into the
 email app’s signature settings. The page includes instructions for Gmail, Apple
 Mail on Mac and Outlook. **Download HTML** is an additional manual-install route.
@@ -17,7 +20,7 @@ Mail on Mac and Outlook. **Download HTML** is an additional manual-install route
   Self-hosted Roboto for the builder; the email body uses Roboto/Arial/Helvetica.
 - Fixed property address preserved from the supplied current signature. Website
   text and destination both use https://thevessyl.com/. Phone is a `tel:` link.
-- Selectable live text, two presentation tables and inline CSS. Exported images
+- Selectable live text, presentation tables and inline CSS. Exported images
   use the public absolute HTTPS URL under this site, never localhost/data URLs.
 - No forms are sent, no accounts are required, no analytics or stored user data.
 
