@@ -66,3 +66,5 @@ URLs and safe link schemes are preserved, and representative payloads remain
 below 10,000 characters. The previously discussed small CTA hit-area limitation
 remains unchanged. Nine tests and the static build pass. No real mail was sent
 and no email-account settings were modified.
+
+Latest preview note: compatibility, font fallback and the built-in12px top gap are one paragraph in both locales. The scoped en-US source and es-419 target passed an independent native Spanish second pass. Current catalogs have59 matching keys.

@@ -40,7 +40,7 @@ Preview window chrome uses decorative macOS-style red, yellow and green
 12 px traffic lights, spaced by 8 px. These are not part of the exported signature.
 
 Signature spacing/type revision: 12 px top, 14 px bottom and 24 px side padding, name
-24 px, role/address/phone/website 12 px. Signature wording is unchanged.
+24 px, role/address/phone/website/CTA 14.5 px. Signature wording is unchanged.
 The surrounding interface has undergone en-US proofreading, including hidden
 client guides, example punctuation and validation/clipboard messages.
 
@@ -103,8 +103,7 @@ The Live preview dot rule now targets only its decorative span. The CTA has
 12px of top spacing in both preview and copied HTML. User-defined 540px signature
 width, logo dimensions, email padding and safety input limits remain intact.
 
-Latest explicit refinements: CTA cell padding is 8px vertically and 10px
-horizontally. The shared address is Altos de Monterey, La Fortuna – Costa Rica.
+Latest explicit refinements: CTA cell padding is 9px vertically and 10px horizontally. The shared address is Altos de Monterey, La Fortuna – Costa Rica.
 Apple guidance starts with the user-requested "On your Apple device" / "En su
 dispositivo Apple". The Mac default-selection sentence was shortened in both
 catalogs without removing account, new-message, reply or forward choices.
@@ -112,9 +111,45 @@ catalogs without removing account, new-message, reply or forward choices.
 Current maximum signature width is 500px without a valid CTA link and 520px
 with one. Preview, clipboard HTML and downloaded HTML share this rule; the
 preview resizes in place without restarting the logo animation.
+The current local Mail trial sets both numeric HTML width and inline CSS width
+to 500px/520px, capped by max-width:100%. Percentage-only width failed a real
+sent-email test (229/181/37px tables), and a numeric HTML fallback combined with
+percentage CSS still serialized to 303px on desktop. Auto table layout, normal
+word wrapping and nested max-width:100% remain to let inner content adapt.
+The extra outer MSO wrapper was removed because the base width is numeric again.
+This candidate is not published and still requires a new received-Mail test.
 Signature inner padding is 12px at the top, 14px at the bottom and 24px at
 each side.
 The contact row now uses justified inline blocks around email-safe tables:
 CTA stays right-aligned beside the contacts, then starts at their left edge
-when it wraps beneath them. Its top gap remains 12px; cell padding remains
-8px/10px. Conditional table markup supplies the desktop Outlook fallback.
+when it wraps beneath them. Its top gap remains 12px; cell padding is now
+9px vertically and 10px horizontally. Conditional table markup supplies the desktop Outlook fallback.
+
+Latest local typography refinements: name-to-role 4px, role-to-address 12px, address-to-contacts 12px; phone/website line-height 20px. All prior 12px signature text is now 14.5px. Local only; no QA or publication requested for these refinements.
+
+Contact text is top-aligned within its row (including the Outlook fallback), so CTA height or its 12px top margin cannot push the phone away from the address. The address-to-phone paragraph gap remains 12px with or without CTA.
+
+Latest local weight refinement: the former 12px signature text (now 14.5px) is Medium 500 for role, address, phone, website and CTA. The 24px name keeps its prior weight.
+
+The contact row uses a shared 12px top gutter with a -12px row offset: contacts stay top-anchored while CTA aligns to the website bottom on a shared line; a wrapped CTA retains a 12px gap. CTA retains 0px bottom margin.
+
+Job titles use a shared presentation formatter adding the literal bullet and space (• ) in preview, HTML/plain clipboard and HTML download; a leading bullet already typed in the field is not duplicated.
+
+Current CTA inner padding is 9px top/bottom and 10px left/right (local-only refinement).
+
+Current CTA-label example is Our Instagram (en-US) / Nuestro Instagram (es-419). Ctrl+Shift+Q derives autofill directly from the localized placeholders, so it uses the same label.
+
+A transparent outer table supplies 12px of top padding above the copper card, separate from the card’s internal 12px top padding. This supplies the requested external gap through table-cell padding rather than a margin that a mail editor may discard.
+
+## Current contact-row implementation
+
+This supersedes the earlier negative-margin and justified-row experiments.
+Contact and CTA columns have explicit numeric widths; browser text measurement
+uses the larger Roboto/Arial advance to reserve the CTA's intrinsic width. The
+contact column fills the remaining desktop space with at least 12px of padding
+before CTA. Each column is capped at the available width and wraps in normal
+flow. No negative margins, justified whitespace or zero-height wrap spacer are
+used. Both columns reserve a 12px bottom gutter: it becomes the inter-row gap
+after wrapping. The outer 2px bottom padding plus the last 12px gutter preserves
+the effective 14px lower edge. Phone remains 12px below address; a shared-row CTA
+aligns to the website bottom. The preview and both HTML exports share this code.

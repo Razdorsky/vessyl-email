@@ -82,3 +82,11 @@ The prior clipboard-API rich insertion check remains documented above. The
 latest native automated paste transferred the plain-text representation, while
 Clipboard API inspection confirms both MIME types; this automation limitation
 is not a native email-client compatibility result. No extended QA was repeated.
+
+## Latest local soft-fade animation
+
+Decoded GIF checks: 300x248 canvas, 200 frames, 8,000ms total, 820,957 bytes. Independent FFmpeg samples show bottom-to-top fade-out and fade-in with a broad soft opacity edge. Official SVG and static PNG are unchanged. Nine existing checks pass. New GIF is local only; its public image revision must be bumped at the next authorized publication.
+
+## Signature-only prepublication audit
+
+Per user scope, the page code was excluded from the manual audit. Six EN/ES signature cases (no CTA, fallback CTA, long label) were parsed in both HTML exports and with/without Outlook conditional tables: tags balance, tables retain presentation roles, user text is escaped, links use safe schemes, web links target a new tab, and GIF URLs are public HTTPS. No negative margins, justified alignment, NaN or Infinity in output. Representative HTML ranges4479–5818 characters. External top spacing now uses a transparent table cell with12px padding. GIF revision changed to fade-20261030-8s. Nine checks and build pass; no native email was sent and no account settings changed. No broad page QA repeated.

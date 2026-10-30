@@ -1,49 +1,47 @@
-# VESSYL signature logo
+# VESSYL signature logo animation
 
-## Artwork authority
+The artwork remains the official VESSYL-only white vertical lockup in
+`assets/vessyl-logo.svg`. Its paths and viewBox are unchanged. The generator
+renders that SVG directly; no reference logo pixels are used.
 
-`assets/vessyl-logo.svg` is our official VESSYL-only white vertical lockup,
-originally supplied by Blueprint at public/brand/logo-vertical-white.svg.
-Its path data has not been altered. The existing viewBox 120 120 740 612 keeps
-clear space around the seal and wordmark. No logo pixels, lettering or paths
-from the email reference are used in this animation.
+## Current local motion
 
-## Reference motion
+The user replaced the earlier sharp reveal with a soft bottom-to-top opacity
+fade: appearance takes 4 seconds and disappearance takes 4 seconds. There are
+no separately inserted pauses. A feather spanning 90% of the artwork height,
+spatial smoothstep and temporal cosine easing replace the hard clipping edge.
+Both phases travel from bottom to top.
 
-The user requests the same motion as the original email GIF, using our own logo.
-Read-only analysis of that GIF found a bottom-to-top reveal: lettering first,
-then the seal, then a complete hold. The source is 113 frames × 30 ms = 3.390 s.
-`assets/animation-reveal.json` stores only derived numerical reveal positions
-and frame delays mapped to our SVG coordinates. It contains no reference image.
+The cyclic file starts at the complete-logo boundary, so clients that show only
+the first GIF frame retain a readable logo. Its encoded order is disappearance
+then appearance, 4 seconds each, with a continuous seam back to the full logo.
 
-The cyclic sequence begins at source phase93 (the complete-logo hold), then
-continues through the blank and reveal phases in their original order. This
-phase rotation preserves the loop and timings while giving email clients that
-stop animation a fully readable first frame.
+GIF cannot encode partial per-pixel alpha, so the opacity is composited onto
+the signature's exact copper background, #311500, before palette encoding.
+A single 256-shade copper-to-white palette avoids animated dithering noise.
 
-## Rendering
+- Canvas: 300 × 248 px; display remains 120 × 99 px.
+- 200 encoded frames at 25 fps; decoded total duration: 8,000 ms.
+- File size: 820,957 bytes; infinite loop.
+- The complete static PNG is unchanged and remains the reduced-motion preview.
+- `assets/animation-fade.json` records the settings and SVG checksum.
+- Historical `assets/animation-reveal.json` is retained as provenance only.
 
-The generator renders our SVG once to an opaque 300 × 248 PNG on #311500.
-Each frame masks the area above its numeric reveal boundary with the same
-background. This avoids SVG clipPath inconsistencies in ImageMagick and
-preserves the logo geometry. There is no opacity pulsing or new deformation.
+## Rebuild
 
-- GIF: 300 × 248, 113 frames, 3.390 seconds, 32,031 bytes, infinite loop.
-- Display size: 120 × 99 px in both preview and exported signature.
-- All coalesced frames are opaque on exact RGB(49,21,0).
-- 60 distinct decoded frame states; first20 complete, next27 blank, remaining66
-  reveal the wordmark and seal upward. First and last frames are complete.
-- Our SVG is byte-for-byte unchanged by this revision.
-- Static PNG remains the complete version for reduced-motion preview.
-
-ImageMagick7 is the sole generation dependency. Rebuild locally:
+ImageMagick 7 is the only external generation dependency:
 
 ```sh
 node scripts/generate-logo.mjs
 ```
 
-The script reads only the checked-in official SVG and numerical trace. It does
-not fetch or read the reference GIF. Temporary frame files are removed afterward.
-The earlier breathing animation remains recoverable from the initial published
-Git commit. This revised animation was approved for publication. The exported image URL
-includes a version query so email image proxies request the updated GIF.
+The script creates temporary RGB frames and removes them afterward. It reads
+only the checked-in official SVG, with no network or reference-image access.
+Decoded intermediate frames were visually inspected and the GIF delay sum was
+verified independently of the generator metadata.
+
+## Publication state
+
+Publication is approved for this revision. Exported and preview image URLs use
+`fade-20261030-8s` so email image proxies fetch the new eight-second asset.
+Existing installed signatures need to be copied again to receive the new URL.

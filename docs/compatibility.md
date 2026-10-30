@@ -52,6 +52,28 @@ rendering tests.
 
 ## Limits of verification
 
+Current local contact-layout correction: negative margins and text justification
+were removed after the received-message failure. Explicit numeric column widths
+and positive table-cell padding provide spacing. Copying/exporting uses the same
+serializer; the original real-mail cases remain archived outside Git. Browser
+and clipboard checks are not a certification of a new native Mail send/receive
+test. No account signature settings were modified and no message was sent.
+
+Local Mail-width investigation: the original received .eml already contained
+229px/181px/37px inline table widths despite percentage HTML attributes. These
+values were baked into the sender's HTML; recipient viewport behavior is not
+their source. The precise import/save/send stage remains unknown. The revised
+local candidate uses explicit numeric HTML/CSS width500/520 and max-width:100%,
+auto column layout, normal word wrapping and nested max-width constraints.
+A second real email showed that a numeric HTML width alone was insufficient:
+its percentage CSS width was already serialized to 303.296875px on the sender.
+A native textutil HTML
+round trip retains 520/472/328px; the earlier candidate also passed that probe,
+so this does not reproduce or certify the failing Mail import path.
+A synthetic fixture with the observed narrow table widths no longer produces
+the 37px text tower. A new real sent-email test is still required. No message
+was sent and no account signature settings were changed by the agent.
+
 Source and browser QA verify the HTML payload, both clipboard MIME types,
 responsive rendering, image loading, validation and installation controls.
 No email is sent and no user’s actual signature settings are changed. This is

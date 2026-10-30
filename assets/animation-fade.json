@@ -1,0 +1,24 @@
+{
+  "artwork": "vessyl-logo.svg",
+  "artworkSha256": "84369cba268d99683eaaa3155114d25e3a5de77dbf5078281ee3a06e26570f25",
+  "size": [
+    300,
+    248
+  ],
+  "fps": 25,
+  "sourceFrames": 200,
+  "durationMs": 8000,
+  "fadeInMs": 4000,
+  "fadeOutMs": 4000,
+  "direction": "bottom-to-top",
+  "featherFraction": 0.9,
+  "temporalEasing": "cosine",
+  "spatialEasing": "smoothstep",
+  "encodedOrder": [
+    "fade-out",
+    "fade-in"
+  ],
+  "firstFrame": "complete logo",
+  "background": "#311500",
+  "bytes": 820957
+}

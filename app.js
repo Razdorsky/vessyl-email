@@ -1,4 +1,4 @@
-import { cleanDetails, signatureHtml, signatureText, signatureDocument, signatureImageUrl, signatureCtaHtml, signatureWidth, ctaHref, validPhone } from './signature.js';
+import { cleanDetails, jobTitleText, signatureHtml, signatureText, signatureDocument, signatureImageUrl, signatureContactHtml, signatureWidth, ctaHref, validPhone } from './signature.js';
 import { messages } from './locales.js';
 import { setupDisclosureMotion, setupLanguageMenu, setupLanguageTextMotion } from './ui.js';
 
@@ -51,18 +51,11 @@ function render() {
   const width = signatureWidth(current);
   preview.firstElementChild.setAttribute('width', String(width));
   preview.firstElementChild.style.width = `${width}px`;
+  preview.firstElementChild.style.maxWidth = '100%';
   const paragraphs = preview.querySelectorAll('p');
   paragraphs[0].querySelector('font').textContent = `${current.firstName} ${current.lastName}`.trim() || t('preview.name');
-  paragraphs[1].querySelector('font').textContent = current.jobTitle || t('preview.role');
-  const phoneLink = paragraphs[3].querySelector('a');
-  phoneLink.querySelector('font').textContent = current.phone || t('preview.phone');
-  if (current.phone) {
-    phoneLink.href = `tel:${current.phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '')}`;
-  } else {
-    phoneLink.removeAttribute('href');
-  }
-  preview.querySelector('[data-signature-cta]')?.remove();
-  preview.querySelector('[data-signature-line-end]').insertAdjacentHTML('beforebegin', signatureCtaHtml(current, signatureOptions()));
+  paragraphs[1].querySelector('font').textContent = jobTitleText(current.jobTitle || t('preview.role'));
+  preview.querySelector('[data-signature-contact]').innerHTML = signatureContactHtml(current, { ...signatureOptions(), phoneFallback: t('preview.phone') });
 }
 
 function updateValidation() {
@@ -228,3 +221,5 @@ setupLanguageMenu(next => animateLanguageText(() => applyLanguage(next)), reduce
 window.addEventListener('popstate', () => applyLanguage(normalizeLocale(new URL(window.location.href).searchParams.get('lang')), false));
 applyLanguage(locale, false);
 syncCopyButton();
+
+document.fonts?.ready.then(() => render());

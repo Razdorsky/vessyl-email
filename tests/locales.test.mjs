@@ -27,5 +27,5 @@ test('Spanish exports localize the CTA fallback while retaining personal and bra
     assert.doesNotMatch(output, /Book a Meeting/);
   }
   assert.match(signatureDocument(data, options), /<html lang="es-419">/);
-  assert.match(signatureHtml(data, options), /margin:12px 0 0/);
+  assert.doesNotMatch(signatureHtml(data, options), /margin(?:-top)?:\s*-/);
 });

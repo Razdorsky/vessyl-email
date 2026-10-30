@@ -19,8 +19,9 @@ when the interface language changes.
 
 - Page background: graphite `#343434`, per the latest user direction.
 - Signature background: VESSYL dark copper `#311500`; warm light text.
-- Official VESSYL-only seal and wordmark. Animated bottom-to-top reveal GIF matching the supplied reference’s motion:
-  3.390 seconds, 113 frames, 32,031 bytes. The complete first frame supports clients with animation off.
+- Official VESSYL-only seal and wordmark. Soft bottom-to-top opacity fade:
+  8 seconds (4s appearance / 4s disappearance), 200 frames, 820,957 bytes.
+  The complete first frame supports clients with animation off.
 - Telugu MN for the name/display text where installed; Georgia is the fallback.
   Self-hosted Roboto for the builder; the email body uses Roboto/Arial/Helvetica.
 - Shared address in both locales: Altos de Monterey, La Fortuna – Costa Rica. Website
