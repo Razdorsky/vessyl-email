@@ -42,6 +42,30 @@ function setStatus(key, state = '') {
   status.textContent = t(key);
   status.dataset.state = state;
 }
+
+function fitPreview() {
+  const table = preview.firstElementChild;
+  if (!table) return;
+  // Scale only the page's preview, preserving the exported email's real layout.
+  const available = preview.clientWidth;
+  const width = table.offsetWidth;
+  const scale = width > 0 ? Math.min(1, available / width) : 1;
+  table.style.transform = `scale(${scale})`;
+  table.style.left = `${Math.max(0, (available - width * scale) / 2)}px`;
+  preview.style.height = `${table.offsetHeight * scale}px`;
+}
+
+let previewFitFrame;
+function schedulePreviewFit() {
+  if (previewFitFrame !== undefined) return;
+  previewFitFrame = requestAnimationFrame(() => {
+    previewFitFrame = undefined;
+    fitPreview();
+  });
+}
+const previewResizeObserver = new ResizeObserver(schedulePreviewFit);
+previewResizeObserver.observe(preview);
+
 function render() {
   const current = details();
   // Update text in place so typing never restarts the logo animation.
@@ -51,11 +75,12 @@ function render() {
   const width = signatureWidth(current);
   preview.firstElementChild.setAttribute('width', String(width));
   preview.firstElementChild.style.width = `${width}px`;
-  preview.firstElementChild.style.maxWidth = '100%';
+  preview.firstElementChild.style.maxWidth = 'none';
   const paragraphs = preview.querySelectorAll('p');
   paragraphs[0].querySelector('font').textContent = `${current.firstName} ${current.lastName}`.trim() || t('preview.name');
   paragraphs[1].querySelector('font').textContent = jobTitleText(current.jobTitle || t('preview.role'));
   preview.querySelector('[data-signature-contact]').innerHTML = signatureContactHtml(current, { ...signatureOptions(), phoneFallback: t('preview.phone') });
+  schedulePreviewFit();
 }
 
 function updateValidation() {
