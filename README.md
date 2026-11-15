@@ -1,6 +1,6 @@
 # VESSYL email signature builder
 
-Live: https://razdorsky.github.io/vessyl-email/
+Team access is through the [private preview](https://team.thevessyl-preview.pages.dev/tools/email-signature/). The [legacy GIF](https://razdorsky.github.io/vessyl-email/assets/vessyl-signature.gif) remains public for previously installed signatures.
 
 Enter first name, last name, job title and phone number; preview updates immediately.
 Optional CTA label/link fields add a button at the lower right, beside the phone
@@ -27,8 +27,9 @@ when the interface language changes.
 - Shared address in both locales: Altos de Monterey, La Fortuna – Costa Rica. Website
   text and destination both use https://thevessyl.com/. Phone is a `tel:` link.
 - Selectable live text, presentation tables and inline CSS. Exported images
-  use the public absolute HTTPS URL under this site, never localhost/data URLs.
-- No forms are sent, no accounts are required, no analytics or stored user data.
+  use an absolute public HTTPS URL that email clients can load directly.
+- The form runs in the browser and sends no form data. The builder uses no
+  analytics or stored user data.
 
 Fonts are not embedded into the clipboard. Email clients can substitute their
 own fonts and can block external images. Apple Mail users should disable
@@ -45,10 +46,10 @@ npm run check    # serializer/security/URL tests and syntax checks
 npm run build    # static deployment artifact in dist/
 ```
 
-GitHub Actions validates and deploys `main` through GitHub Pages. Direct main
-publication is permitted for this standalone repository. The static build
-includes only app files and public assets; tests and source documentation are
-not served on the public site.
+GitHub Actions validates the builder and publishes the legacy GIF through GitHub
+Pages. Keep `assets/vessyl-signature.gif` at its existing public path. The full
+`dist/` build is used to assemble the private preview and the public Pages
+artifact contains only the GIF.
 
 `tests/paste-target.html` is a local-only diagnostic surface, excluded from the
 deployment. It never sends email or changes account settings.

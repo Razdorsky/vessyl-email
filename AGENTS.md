@@ -1,8 +1,9 @@
 # VESSYL email signature builder
 
-Standalone static builder, published only to `Razdorsky/vessyl-email`, main branch,
-GitHub Pages at https://razdorsky.github.io/vessyl-email/.
-Direct main publication is permitted for this small standalone project.
+Standalone static builder used in the Vessyl team preview. GitHub Pages for
+`Razdorsky/vessyl-email` publishes only the legacy `assets/vessyl-signature.gif`
+so previously installed email signatures can still load it. Direct main
+publication is permitted for this standalone project.
 Never modify Blueprint or the other marketing website repositories.
 
 Use the official VESSYL-only logo, dark copper #311500, Telugu MN for display
